@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 class Home extends Component {
   state = {
     search: '',
+    // products: [],
   };
 
   onInputSearch = ({ target }) => {
@@ -14,18 +15,27 @@ class Home extends Component {
     const { search } = this.state;
     return (
       <>
-        <input
-          type="text"
-          value={ search }
-          onChange={ this.onInputSearch }
-        />
-
-        { !search
-          && (
-            <span data-testid="home-initial-message">
-              Digite algum termo de pesquisa ou escolha uma categoria.
-            </span>
-          )}
+        <div>
+          <form onSubmit={ this.onSearchProduct }>
+            <input
+              type="text"
+              value={ search }
+              onChange={ this.onInputSearch }
+              data-testid="query-input"
+            />
+            <button data-testid="query-button">
+              buscar
+            </button>
+          </form>
+        </div>
+        <div>
+          { !search
+            && (
+              <span data-testid="home-initial-message">
+                Digite algum termo de pesquisa ou escolha uma categoria.
+              </span>
+            )}
+        </div>
       </>
     );
   }
