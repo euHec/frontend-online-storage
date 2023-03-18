@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import ListCategories from '../components/ListCategories';
 
 class Home extends Component {
   state = {
@@ -26,6 +27,8 @@ class Home extends Component {
               Digite algum termo de pesquisa ou escolha uma categoria.
             </span>
           )}
+        {/* Renderização da lista na página principal */}
+        <ListCategories />
       </>
     );
   }
