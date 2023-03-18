@@ -1,9 +1,12 @@
 import React, { Component } from 'react';
 import { getProductsFromCategoryAndQuery } from '../services/api';
+import Card from '../Components/Card';
+import './Home.css';
 
 class Home extends Component {
   state = {
     search: '',
+    validate: false,
     products: [],
   };
 
@@ -19,14 +22,12 @@ class Home extends Component {
     event.preventDefault();
     const response = await getProductsFromCategoryAndQuery(search);
     const { results } = response;
-    console.log(results);
-    this.setState({ products: results });
+    this.setState({ products: results, validate: true });
   };
 
   render() {
-    const { search, products } = this.state;
+    const { search, products, validate } = this.state;
     const UNDEFINED = <span>Nenhum produto foi encontrato</span>;
-    console.log(products);
     return (
       <>
         <div>
@@ -49,11 +50,14 @@ class Home extends Component {
                 Digite algum termo de pesquisa ou escolha uma categoria.
               </span>
             )}
-          {/* {
-            products === undefined ? UNDEFINED : (
-              <span> produtos </span>
-            )
-          } */}
+          <div className="listOfProducts">
+            { validate && (
+              products.length === 0 ? UNDEFINED : (
+                products.map((product) => (
+                  <Card key={ product.id } details={ product } />))
+              )
+            )}
+          </div>
         </div>
       </>
     );
