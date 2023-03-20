@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
 import { getProductsFromCategoryAndQuery } from '../services/api';
 import Card from '../Components/Card';
 import './Home.css';
-import { Link } from 'react-router-dom';
-import ListCategories from '../components/ListCategories';
+import ListCategories from '../Components/ListCategories';
 
 class Home extends Component {
   state = {
@@ -32,40 +32,46 @@ class Home extends Component {
     const UNDEFINED = <span>Nenhum produto foi encontrato</span>;
     return (
       <>
-        <div>
-          <form onSubmit={ this.onSearchProduct }>
-            <input
-              type="text"
-              value={ search }
-              onChange={ this.onInputSearch }
-              data-testid="query-input"
-            />
-            <button data-testid="query-button">
-              buscar
-            </button>
-          </form>
-        </div>
-        <div>
-          { !search
-            && (
-              <span data-testid="home-initial-message">
-                Digite algum termo de pesquisa ou escolha uma categoria.
-              </span>
-            )}
+        <div className="header">
           <div>
-            <ListCategories />
+            <form onSubmit={ this.onSearchProduct }>
+              <input
+                type="text"
+                value={ search }
+                onChange={ this.onInputSearch }
+                data-testid="query-input"
+              />
+              <button data-testid="query-button">
+                buscar
+              </button>
+            </form>
+          </div>
+          <div>
             {/* Link para o Cart */}
             <Link to="/cart" data-testid="shopping-cart-button">
               Carrinho de compras
             </Link>
           </div>
-          <div className="listOfProducts">
-            { validate && (
-              products.length === 0 ? UNDEFINED : (
-                products.map((product) => (
-                  <Card key={ product.id } details={ product } />))
-              )
-            )}
+        </div>
+        <div>
+          <div className="page-home">
+            <div className="list-categories">
+              <ListCategories />
+            </div>
+            <div className="listOfProducts">
+              { !search
+                && (
+                  <span data-testid="home-initial-message">
+                    Digite algum termo de pesquisa ou escolha uma categoria.
+                  </span>
+                )}
+              { validate && (
+                products.length === 0 ? UNDEFINED : (
+                  products.map((product) => (
+                    <Card key={ product.id } details={ product } />))
+                )
+              )}
+            </div>
           </div>
         </div>
       </>

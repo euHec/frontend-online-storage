@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import Card from './Card';
 import { getCategories, getProductsFromCategoryAndQuery } from '../services/api';
 
 class ListCategories extends Component {
@@ -53,7 +54,7 @@ class ListCategories extends Component {
         { products.length > 0 && (
           <div>
             <h2>Produtos</h2>
-            <ul>
+            {/* <ul>
               { products.map((product) => (
                 <li key={ product.id } data-testid="product">
                   <img src={ product.thumbnail } alt={ product.title } />
@@ -61,7 +62,11 @@ class ListCategories extends Component {
                   <p>{ product.price }</p>
                 </li>
               ))}
-            </ul>
+            </ul> */}
+            { products.length === 0 ? UNDEFINED : (
+              products.map((product) => (
+                <Card key={ product.id } details={ product } />))
+            )}
           </div>
         )}
       </div>
