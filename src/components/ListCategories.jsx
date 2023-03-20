@@ -62,8 +62,7 @@ class ListCategories extends Component {
                     <p>{product.title}</p>
                     <p>{product.price}</p>
                   </Link>
-                </li>
-              ))}
+
             </ul>
           </div>
         )}
