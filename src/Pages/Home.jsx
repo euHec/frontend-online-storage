@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { getProductsFromCategoryAndQuery } from '../services/api';
 import Card from '../Components/Card';
 import './Home.css';
+import { Link } from 'react-router-dom';
+import ListCategories from '../components/ListCategories';
 
 class Home extends Component {
   state = {
@@ -50,6 +52,13 @@ class Home extends Component {
                 Digite algum termo de pesquisa ou escolha uma categoria.
               </span>
             )}
+          <div>
+            <ListCategories />
+            {/* Link para o Cart */}
+            <Link to="/cart" data-testid="shopping-cart-button">
+              Carrinho de compras
+            </Link>
+          </div>
           <div className="listOfProducts">
             { validate && (
               products.length === 0 ? UNDEFINED : (
