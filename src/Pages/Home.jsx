@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import { getProductsFromCategoryAndQuery } from '../services/api';
+import { getProductsFromCategoryAndQuery, getCategories } from '../services/api';
 import Card from '../Components/Card';
 import './Home.css';
 import ListCategories from '../Components/ListCategories';
@@ -8,8 +8,32 @@ import ListCategories from '../Components/ListCategories';
 class Home extends Component {
   state = {
     search: '',
-    validate: false,
+    validate: false, // validação para apagar texto da tela
+    undefine: false, // validção para imprimir o texto de não encontrado
     products: [],
+    listOfCategories: [],
+  };
+
+  // chamando a função categories após o carregamento da tela
+  componentDidMount() {
+    this.categories();
+  }
+
+  // Função responsável pela requisição dos produtos da categoria selecionada
+  getProductsByCategory = async (categoryId) => {
+    const products = await getProductsFromCategoryAndQuery(categoryId, '');
+    this.setState({ products: products.results, validate: true });
+  };
+
+  // Função responsável pela requisição feita na api
+  categories = async () => {
+    // declarando a constante nameCategorie onde ela armazena o retorno da getCategories
+    const nameCategorie = await getCategories();
+
+    // Alterando o estado listOfCategories onde ele recebe a const nameCategorie
+    this.setState({
+      listOfCategories: nameCategorie,
+    });
   };
 
   // Função que cuida do preenchimento do atributo search no state
@@ -22,14 +46,16 @@ class Home extends Component {
   onSearchProduct = async (event) => {
     const { search } = this.state;
     event.preventDefault();
-    const response = await getProductsFromCategoryAndQuery(search);
+    const response = await getProductsFromCategoryAndQuery('', search);
+    console.log(response);
     const { results } = response;
+    if (results.length === 0) this.setState({ undefine: true });
     this.setState({ products: results, validate: true });
   };
 
   render() {
-    const { search, products, validate } = this.state;
-    const UNDEFINED = <span>Nenhum produto foi encontrato</span>;
+    const { search, products, validate, listOfCategories, undefine } = this.state;
+    const UNDEFINED = <span>Nenhum produto foi encontrado</span>;
     return (
       <>
         <div className="header">
@@ -56,20 +82,25 @@ class Home extends Component {
         <div>
           <div className="page-home">
             <div className="list-categories">
-              <ListCategories />
+              { listOfCategories.map(({ id, name }) => (
+                <ListCategories
+                  key={ id }
+                  listOfCategories={ name }
+                  product={ products }
+                  productsByCategory={ () => this.getProductsByCategory(id) }
+                />))}
             </div>
             <div className="listOfProducts">
-              { !search
+              { (!search && !validate)
                 && (
                   <span data-testid="home-initial-message">
                     Digite algum termo de pesquisa ou escolha uma categoria.
                   </span>
                 )}
-              { validate && (
-                products.length === 0 ? UNDEFINED : (
-                  products.map((product) => (
-                    <Card key={ product.id } details={ product } />))
-                )
+              { undefine && UNDEFINED }
+              { (products.length !== 0) && (
+                products.map((product) => (
+                  <Card key={ product.id } details={ product } />))
               )}
             </div>
           </div>
