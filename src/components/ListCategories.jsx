@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
 import { getCategories, getProductsFromCategoryAndQuery } from '../services/api';
 
 class ListCategories extends Component {
@@ -50,17 +51,18 @@ class ListCategories extends Component {
         ))}
 
         {/* Renderiza os produtos obtidos da API */}
-        { products.length > 0 && (
+        {products.length > 0 && (
           <div>
             <h2>Produtos</h2>
             <ul>
-              { products.map((product) => (
+              {products.map((product) => (
                 <li key={ product.id } data-testid="product">
-                  <img src={ product.thumbnail } alt={ product.title } />
-                  <p>{ product.title }</p>
-                  <p>{ product.price }</p>
-                </li>
-              ))}
+                  <Link to={ `/product/${product.id}` } data-testid="product-detail-link">
+                    <img src={ product.thumbnail } alt={ product.title } />
+                    <p>{product.title}</p>
+                    <p>{product.price}</p>
+                  </Link>
+
             </ul>
           </div>
         )}
