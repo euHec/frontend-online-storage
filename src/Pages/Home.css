@@ -1,0 +1,15 @@
+.header {
+  display: flex;
+  justify-content: space-around;
+}
+
+.page-home {
+  display: flex;
+  flex-direction: row;
+}
+
+.listOfProducts {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-around;
+}
