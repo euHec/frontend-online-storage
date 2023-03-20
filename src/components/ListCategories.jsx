@@ -1,13 +1,14 @@
 import React, { Component } from 'react';
-import { getCategories } from '../services/api';
+import { getCategories, getProductsFromCategoryAndQuery } from '../services/api';
 
 class ListCategories extends Component {
   // iniciando o estado listOfCategories como um array vazio
   state = {
     listOfCategories: [],
+    products: [],
   };
 
-  // chamando a funão categories após o carregamento da tela
+  // chamando a função categories após o carregamento da tela
   componentDidMount() {
     this.categories();
   }
@@ -23,19 +24,46 @@ class ListCategories extends Component {
     });
   };
 
+  // Função responsável pela requisição dos produtos da categoria selecionada
+  getProductsByCategory = async (categoryId) => {
+    const products = await getProductsFromCategoryAndQuery(categoryId, '');
+    this.setState({ products: products.results });
+  };
+
   render() {
     // chamando o estado
-    const { listOfCategories } = this.state;
+    const { listOfCategories, products } = this.state;
+
     return (
       <div>
         {/* Procurando o nome das categorias no array com o map */}
         { listOfCategories.map((categorie) => (
           <div key={ categorie.id }>
-            <button type="button" data-testid="category">
+            <button
+              type="button"
+              data-testid="category"
+              onClick={ () => this.getProductsByCategory(categorie.id) }
+            >
               {categorie.name}
             </button>
           </div>
         ))}
+
+        {/* Renderiza os produtos obtidos da API */}
+        { products.length > 0 && (
+          <div>
+            <h2>Produtos</h2>
+            <ul>
+              { products.map((product) => (
+                <li key={ product.id } data-testid="product">
+                  <img src={ product.thumbnail } alt={ product.title } />
+                  <p>{ product.title }</p>
+                  <p>{ product.price }</p>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </div>
     );
   }
