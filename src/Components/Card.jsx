@@ -8,6 +8,7 @@ class Card extends Component {
     const { title, thumbnail, price } = details;
     return (
       <div data-testid="product" className="product">
+        {/* < Link to={`/product/${id}`}/> */}
         <div>
           <span>{title}</span>
         </div>
