@@ -110,9 +110,8 @@ class Home extends Component {
                 products.map((product, index) => (
                   <>
                     <Card
-                      key={ product.id }
+                      key={ index }
                       details={ product }
-                      addToCart={ this.addToCart }
                     />
                     <button
                       key={ index }

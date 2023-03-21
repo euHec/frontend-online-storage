@@ -17,6 +17,14 @@ class ProductDetails extends Component {
     this.setState({ product: response });
   }
 
+  addToCart = (product) => {
+    console.log(product);
+    const { title, thumbnail, price } = product;
+    const cart = JSON.parse(localStorage.getItem('cart')) || [];
+    cart.push({ name: title, image: thumbnail, value: price, qt: 1 });
+    localStorage.setItem('cart', JSON.stringify(cart));
+  };
+
   render() {
     const { product } = this.state;
 
@@ -50,7 +58,12 @@ class ProductDetails extends Component {
 
         {/* Link para o carrinho de compras */}
         <Link to="/cart" data-testid="shopping-cart-button">Carrinho de Compras</Link>
-
+        <button
+          data-testid="product-detail-add-to-cart"
+          onClick={ () => this.addToCart(product) }
+        >
+          Adicionar
+        </button>
       </div>
     );
   }
