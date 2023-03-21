@@ -108,9 +108,10 @@ class Home extends Component {
               { undefine && UNDEFINED }
               { (products.length !== 0) && (
                 products.map((product, index) => (
-                  <>
+
+                  // troquei o fragment <> por uma div
+                  <div key={ index }>
                     <Card
-                      key={ index }
                       details={ product }
                     />
                     <button
@@ -121,7 +122,7 @@ class Home extends Component {
                       Adicionar
                     </button>
 
-                  </>))
+                  </div>))
               )}
             </div>
           </div>
