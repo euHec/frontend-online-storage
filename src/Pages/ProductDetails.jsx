@@ -23,7 +23,7 @@ class ProductDetails extends Component {
     const { params } = match;
     const { productId } = params;
     const response = await getProductById(productId);
-    const reviews = JSON.parse(localStorage.getItem(`product_${productId}_reviews`))
+    const reviews = JSON.parse(localStorage.getItem(`${productId}`))
     || [];
     this.setState({ product: response, reviews });
   }
@@ -54,7 +54,7 @@ class ProductDetails extends Component {
     const { review: { email, text, rating } } = this.state;
 
     // validação dos campos
-    if (!email || !text || !rating) {
+    if (!email || !rating) {
       this.setState({ error: true }); // atualizando o estado error
       return;
     }
@@ -62,7 +62,7 @@ class ProductDetails extends Component {
     const newReview = { email, text, rating };
     this.setState((prevState) => {
       const newReviews = [...prevState.reviews, newReview];
-      localStorage.setItem(`product_${productId}_reviews`, JSON.stringify(newReviews));
+      localStorage.setItem(`${productId}`, JSON.stringify(newReviews));
       return {
         reviews: newReviews,
         review: {
@@ -177,21 +177,29 @@ class ProductDetails extends Component {
         <div>
           {reviews.map((currentReview, index) => (
             <div key={ index }>
-              <p data-testid="review-card-email">
+              <p>
                 Email:
-                { currentReview.email}
+                <span data-testid="review-card-email">
+                  { currentReview.email}
+                </span>
               </p>
-              <p data-testid="review-card-rating">
+              <p>
                 Avaliação:
-                { currentReview.rating }
+                <span data-testid="review-card-rating">
+                  { currentReview.rating}
+                </span>
               </p>
-              <p data-testid="review-card-evaluation">
+              <p>
                 Comentário:
-                { currentReview.text }
+                <span data-testid="review-card-evaluation">
+                  { currentReview.text}
+                </span>
               </p>
               {/* remover o <br> depois */}
               <br />
+
             </div>
+
           ))}
         </div>
 
