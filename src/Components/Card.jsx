@@ -26,10 +26,12 @@ class Card extends Component {
 }
 
 Card.propTypes = {
-  details: PropTypes.string.isRequired,
-  title: PropTypes.string.isRequired,
-  thumbnail: PropTypes.string.isRequired,
-  price: PropTypes.string.isRequired,
+  details: PropTypes.shape({
+    id: PropTypes.string,
+    title: PropTypes.string,
+    thumbnail: PropTypes.string,
+    price: PropTypes.number,
+  }).isRequired,
 };
 
 export default Card;

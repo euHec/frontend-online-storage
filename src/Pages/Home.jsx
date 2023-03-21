@@ -53,6 +53,14 @@ class Home extends Component {
     this.setState({ products: results, validate: true });
   };
 
+  addToCart = (product) => {
+    console.log(product);
+    const { title, thumbnail, price } = product;
+    const cart = JSON.parse(localStorage.getItem('cart')) || [];
+    cart.push({ name: title, image: thumbnail, value: price, qt: 1 });
+    localStorage.setItem('cart', JSON.stringify(cart));
+  };
+
   render() {
     const { search, products, validate, listOfCategories, undefine } = this.state;
     const UNDEFINED = <span>Nenhum produto foi encontrado</span>;
@@ -99,8 +107,22 @@ class Home extends Component {
                 )}
               { undefine && UNDEFINED }
               { (products.length !== 0) && (
-                products.map((product) => (
-                  <Card key={ product.id } details={ product } />))
+                products.map((product, index) => (
+                  <>
+                    <Card
+                      key={ product.id }
+                      details={ product }
+                      addToCart={ this.addToCart }
+                    />
+                    <button
+                      key={ index }
+                      data-testid="product-add-to-cart"
+                      onClick={ () => this.addToCart(product) }
+                    >
+                      Adicionar
+                    </button>
+
+                  </>))
               )}
             </div>
           </div>

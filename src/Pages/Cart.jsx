@@ -8,24 +8,37 @@ class Cart extends Component {
     };
   }
 
+  componentDidMount() {
+    this.shoppingCart();
+  }
+
+  shoppingCart = () => {
+    const cart = JSON.parse(localStorage.getItem('cart')) || [];
+    this.setState({ products: cart });
+  };
+
   render() {
     const { products } = this.state;
-    const cartEmpty = products.length === 0;
-
     return (
-      <div>
-        <h1>Carrinho de compras</h1>
-        {cartEmpty ? (
-          <p data-testid="shopping-cart-empty-message">Seu carrinho está vazio</p>
-        ) : (
-          <div>
-            <p>Lista de produtos:</p>
-            <ul>
-              {/* Aqui podemos renderizar a logica para a lista de produtos */}
-            </ul>
-          </div>
+      <>
+        { products.length === 0 ? (
+          <h3 data-testid="shopping-cart-empty-message">
+            Seu carrinho está vazio
+          </h3>
+        ) : (products.map((product, index) => (
+          <li key={ index }>
+            <h3 data-testid="shopping-cart-product-name">{ product.name }</h3>
+            <img src={ product.image } alt={ product.name } />
+            <h3>
+              R$
+              {product.value}
+            </h3>
+            <h3 data-testid="shopping-cart-product-quantity">{ product.qt }</h3>
+          </li>
+        ))
         )}
-      </div>
+        ;
+      </>
     );
   }
 }
