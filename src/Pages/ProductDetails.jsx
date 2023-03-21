@@ -3,9 +3,18 @@ import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import { getProductById } from '../services/api';
 
+const ratingValues = ['1', '2', '3', '4', '5'];
+
 class ProductDetails extends Component {
   state = {
     product: {},
+    review: {
+      email: '',
+      rating: 0,
+      text: '',
+    },
+    reviews: [],
+    error: false,
   };
 
   // Obtém o ID do produto, faz uma chamada à API e atualiza o estado do componente
@@ -14,7 +23,9 @@ class ProductDetails extends Component {
     const { params } = match;
     const { productId } = params;
     const response = await getProductById(productId);
-    this.setState({ product: response });
+    const reviews = JSON.parse(localStorage.getItem(`product_${productId}_reviews`))
+    || [];
+    this.setState({ product: response, reviews });
   }
 
   addToCart = (product) => {
@@ -25,8 +36,50 @@ class ProductDetails extends Component {
     localStorage.setItem('cart', JSON.stringify(cart));
   };
 
+  handleInputChange = (event) => {
+    const { name, value } = event.target;
+    this.setState((prevState) => ({
+      review: {
+        ...prevState.review,
+        [name]: value,
+      },
+    }));
+  };
+
+  handleSubmitReview = (event) => {
+    event.preventDefault();
+    const { match } = this.props;
+    const { params } = match;
+    const { productId } = params;
+    const { review: { email, text, rating } } = this.state;
+
+    // validação dos campos
+    if (!email || !text || !rating) {
+      this.setState({ error: true }); // atualizando o estado error
+      return;
+    }
+
+    const newReview = { email, text, rating };
+    this.setState((prevState) => {
+      const newReviews = [...prevState.reviews, newReview];
+      localStorage.setItem(`product_${productId}_reviews`, JSON.stringify(newReviews));
+      return {
+        reviews: newReviews,
+        review: {
+          email: '',
+          text: '',
+          rating: 0,
+        },
+        error: false, // resetando o estado error para false
+      };
+    });
+  };
+
   render() {
     const { product } = this.state;
+    const { review } = this.state;
+    const { email, rating, text } = review;
+    const { reviews, error } = this.state;
 
     return (
       <div>
@@ -64,6 +117,84 @@ class ProductDetails extends Component {
         >
           Adicionar
         </button>
+
+        {/* Form */}
+        <form onSubmit={ this.handleSubmitReview }>
+
+          {/* Email */}
+          <label htmlFor="email">
+            Email:
+            <input
+              type="email"
+              id="email"
+              name="email"
+              value={ email }
+              onChange={ this.handleInputChange }
+              data-testid="product-detail-email"
+            />
+          </label>
+
+          {/* Nota de avaliação */}
+          <div>
+            Avaliação:
+            {ratingValues.map((index) => (
+              <label key={ index }>
+                <input
+                  type="radio"
+                  name="rating"
+                  value={ index }
+                  checked={ rating === index }
+                  onChange={ this.handleInputChange }
+                  data-testid={ `${index}-rating` }
+                />
+                {index}
+              </label>
+            ))}
+          </div>
+
+          {/* Input de Comentários */}
+          <label htmlFor="text">
+            Comentário:
+            <textarea
+              id="text"
+              name="text"
+              value={ text }
+              onChange={ this.handleInputChange }
+              data-testid="product-detail-evaluation"
+            />
+
+            {/* Botão Submit */}
+          </label>
+          {error && <p data-testid="error-msg">Campos inválidos</p>}
+          {/* exibindo mensagem de erro caso o estado error seja true */}
+          <button type="submit" data-testid="submit-review-btn">
+            Enviar Avaliação
+          </button>
+
+        </form>
+
+        {/* Review criado após dar submit no botão */}
+        <div>
+          {reviews.map((currentReview, index) => (
+            <div key={ index }>
+              <p data-testid="review-card-email">
+                Email:
+                { currentReview.email}
+              </p>
+              <p data-testid="review-card-rating">
+                Avaliação:
+                { currentReview.rating }
+              </p>
+              <p data-testid="review-card-evaluation">
+                Comentário:
+                { currentReview.text }
+              </p>
+              {/* remover o <br> depois */}
+              <br />
+            </div>
+          ))}
+        </div>
+
       </div>
     );
   }
@@ -78,3 +209,5 @@ ProductDetails.propTypes = {
 };
 
 export default ProductDetails;
+
+// ok
