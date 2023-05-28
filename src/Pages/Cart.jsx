@@ -28,6 +28,9 @@ class Cart extends Component {
           return item;
         }),
       };
+    }, () => {
+      const { products } = this.state;
+      localStorage.setItem('cart', JSON.stringify(products));
     });
   };
 
@@ -45,13 +48,18 @@ class Cart extends Component {
           return item;
         }),
       };
+    }, () => {
+      const { products } = this.state;
+      localStorage.setItem('cart', JSON.stringify(products));
     });
   };
 
   removeItem = ({ name }) => {
     const { products } = this.state;
     const newListProducts = products.filter((item) => item.name !== name);
-    this.setState(() => ({ products: newListProducts }));
+    this.setState(() => ({ products: newListProducts }), () => {
+      localStorage.setItem('cart', JSON.stringify(newListProducts));
+    });
   };
 
   render() {
