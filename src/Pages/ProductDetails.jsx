@@ -29,7 +29,6 @@ class ProductDetails extends Component {
   }
 
   addToCart = (product) => {
-    console.log(product);
     const { title, thumbnail, price } = product;
     const cart = JSON.parse(localStorage.getItem('cart')) || [];
     cart.push({ name: title, image: thumbnail, value: price, qt: 1 });
