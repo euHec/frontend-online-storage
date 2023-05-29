@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
+import { AiOutlineShoppingCart } from 'react-icons/ai';
 import { getProductsFromCategoryAndQuery, getCategories } from '../services/api';
 import Card from '../Components/Card';
 import './Home.css';
@@ -8,6 +9,7 @@ import ListCategories from '../Components/ListCategories';
 class Home extends Component {
   state = {
     search: '',
+    size: 0,
     validate: false, // validação para apagar texto da tela
     undefine: false, // validção para imprimir o texto de não encontrado
     products: [],
@@ -17,6 +19,8 @@ class Home extends Component {
   // chamando a função categories após o carregamento da tela
   componentDidMount() {
     this.categories();
+    const lengthCart = JSON.parse(localStorage.getItem('cart')) || [];
+    this.setState(() => ({ size: lengthCart.length }));
   }
 
   // Função responsável pela requisição dos produtos da categoria selecionada
@@ -54,15 +58,15 @@ class Home extends Component {
   };
 
   addToCart = (product) => {
-    console.log(product);
     const { title, thumbnail, price } = product;
     const cart = JSON.parse(localStorage.getItem('cart')) || [];
     cart.push({ name: title, image: thumbnail, value: price, qt: 1 });
     localStorage.setItem('cart', JSON.stringify(cart));
+    this.setState(() => ({ size: cart.length }));
   };
 
   render() {
-    const { search, products, validate, listOfCategories, undefine } = this.state;
+    const { search, products, validate, listOfCategories, undefine, size } = this.state;
     const UNDEFINED = <span>Nenhum produto foi encontrado</span>;
     return (
       <>
@@ -83,7 +87,10 @@ class Home extends Component {
           <div>
             {/* Link para o Cart */}
             <Link to="/cart" data-testid="shopping-cart-button">
-              Carrinho de compras
+              <AiOutlineShoppingCart />
+              { size !== 0 && (
+                <p data-testid="shopping-cart-size">{ size }</p>
+              ) }
             </Link>
           </div>
         </div>

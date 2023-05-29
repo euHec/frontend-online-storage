@@ -1,12 +1,14 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
+import { AiOutlineShoppingCart } from 'react-icons/ai';
 import { getProductById } from '../services/api';
 
 const ratingValues = ['1', '2', '3', '4', '5'];
 
 class ProductDetails extends Component {
   state = {
+    size: 0,
     product: {},
     review: {
       email: '',
@@ -23,9 +25,9 @@ class ProductDetails extends Component {
     const { params } = match;
     const { productId } = params;
     const response = await getProductById(productId);
-    const reviews = JSON.parse(localStorage.getItem(`${productId}`))
-    || [];
-    this.setState({ product: response, reviews });
+    const reviews = JSON.parse(localStorage.getItem(`${productId}`)) || [];
+    const lengthCart = JSON.parse(localStorage.getItem('cart')) || [];
+    this.setState({ product: response, reviews, size: lengthCart.length });
   }
 
   addToCart = (product) => {
@@ -33,6 +35,7 @@ class ProductDetails extends Component {
     const cart = JSON.parse(localStorage.getItem('cart')) || [];
     cart.push({ name: title, image: thumbnail, value: price, qt: 1 });
     localStorage.setItem('cart', JSON.stringify(cart));
+    this.setState(() => ({ size: cart.length }));
   };
 
   handleInputChange = (event) => {
@@ -78,7 +81,7 @@ class ProductDetails extends Component {
     const { product } = this.state;
     const { review } = this.state;
     const { email, rating, text } = review;
-    const { reviews, error } = this.state;
+    const { size, reviews, error } = this.state;
 
     return (
       <div>
@@ -109,7 +112,12 @@ class ProductDetails extends Component {
         </p>
 
         {/* Link para o carrinho de compras */}
-        <Link to="/cart" data-testid="shopping-cart-button">Carrinho de Compras</Link>
+        <Link to="/cart" data-testid="shopping-cart-button">
+          <AiOutlineShoppingCart />
+          { size !== 0 && (
+            <p data-testid="shopping-cart-size">{ size }</p>
+          ) }
+        </Link>
         <button
           data-testid="product-detail-add-to-cart"
           onClick={ () => this.addToCart(product) }
