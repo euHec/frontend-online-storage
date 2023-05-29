@@ -102,12 +102,16 @@ class Cart extends Component {
             ))
           )
         }
-        <button
-          data-testid="checkout-products"
-          onClick={ () => history.push('/checkout') }
-        >
-          Finalizar compra
-        </button>
+        {
+          products.length !== 0 && (
+            <button
+              data-testid="checkout-products"
+              onClick={ () => history.push('/checkout') }
+            >
+              Finalizar compra
+            </button>
+          )
+        }
       </>
     );
   }

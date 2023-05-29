@@ -27,15 +27,19 @@ export default class Checkout extends Component {
 
   handleSubmit = (e) => {
     e.preventDefault();
-    const { cep, cpf, email, address, name, phone } = this.state;
+    const { cep, cpf, email, address, name, phone, method } = this.state;
+    const { history } = this.props;
     if (
       cep === '' && cpf === ''
       && email === '' && address === ''
       && name === '' && phone === ''
+      && method === ''
     ) {
       this.setState(() => ({ errorMessage: true }));
     } else {
       this.setState(() => ({ errorMessage: false }));
+      localStorage.removeItem('cart');
+      history.push('/');
     }
   };
 
@@ -84,7 +88,7 @@ export default class Checkout extends Component {
               data-testid="checkout-email"
             />
             <input
-              type="number"
+              type="text"
               placeholder="CPF"
               name="cpf"
               onChange={ this.handleChanges }
@@ -92,7 +96,7 @@ export default class Checkout extends Component {
               data-testid="checkout-cpf"
             />
             <input
-              type="tel"
+              type="text"
               placeholder="Telefone"
               name="phone"
               onChange={ this.handleChanges }
@@ -100,7 +104,7 @@ export default class Checkout extends Component {
               data-testid="checkout-phone"
             />
             <input
-              type="number"
+              type="text"
               placeholder="CEP"
               name="cep"
               onChange={ this.handleChanges }
@@ -121,9 +125,7 @@ export default class Checkout extends Component {
               data-testid="checkout-btn"
             />
             {
-              errorMessage === true && (
-                <p data-testid="error-msg">Preencha todos os campos</p>
-              )
+              errorMessage === true && (<p data-testid="error-msg">Campos inválidos</p>)
             }
           </form>
           <div>
