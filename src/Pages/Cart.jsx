@@ -1,11 +1,12 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import { RxCaretLeft } from 'react-icons/rx';
 
 class Cart extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      products: [], // Inicializa o state com uma lista vazia de produtos
+      products: [],
     };
   }
 
@@ -68,6 +69,9 @@ class Cart extends Component {
     const { history } = this.props;
     return (
       <>
+        <button onClick={ () => history.push('/') }>
+          <RxCaretLeft />
+        </button>
         {
           products.length === 0 ? (
             <h3 data-testid="shopping-cart-empty-message">

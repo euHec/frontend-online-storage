@@ -1,52 +1,41 @@
+import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
 import { AiOutlineShoppingCart } from 'react-icons/ai';
 import { getProductsFromCategoryAndQuery, getCategories } from '../services/api';
 import Card from '../Components/Card';
-import './Home.css';
 import ListCategories from '../Components/ListCategories';
 
 class Home extends Component {
   state = {
     search: '',
     size: 0,
-    validate: false, // validação para apagar texto da tela
-    undefine: false, // validção para imprimir o texto de não encontrado
+    validate: false,
+    undefine: false,
     products: [],
     listOfCategories: [],
   };
 
-  // chamando a função categories após o carregamento da tela
   componentDidMount() {
     this.categories();
     const lengthCart = JSON.parse(localStorage.getItem('cart')) || [];
     this.setState(() => ({ size: lengthCart.length }));
   }
 
-  // Função responsável pela requisição dos produtos da categoria selecionada
   getProductsByCategory = async (categoryId) => {
     const products = await getProductsFromCategoryAndQuery(categoryId, '');
     this.setState({ products: products.results, validate: true });
   };
 
-  // Função responsável pela requisição feita na api
   categories = async () => {
-    // declarando a constante nameCategorie onde ela armazena o retorno da getCategories
     const nameCategorie = await getCategories();
-
-    // Alterando o estado listOfCategories onde ele recebe a const nameCategorie
-    this.setState({
-      listOfCategories: nameCategorie,
-    });
+    this.setState({ listOfCategories: nameCategorie });
   };
 
-  // Função que cuida do preenchimento do atributo search no state
   onInputSearch = ({ target }) => {
     const { value } = target;
     this.setState({ search: value });
   };
 
-  // Função que é aciona uma chamada de API para listar os produtos
   onSearchProduct = async (event) => {
     const { search } = this.state;
     event.preventDefault();
@@ -58,14 +47,35 @@ class Home extends Component {
   };
 
   addToCart = (product) => {
-    const { title, thumbnail, price } = product;
+    // eslint-disable-next-line camelcase
+    const { title, thumbnail, price, available_quantity } = product;
     const cart = JSON.parse(localStorage.getItem('cart')) || [];
-    cart.push({ name: title, image: thumbnail, value: price, qt: 1 });
-    localStorage.setItem('cart', JSON.stringify(cart));
-    this.setState(() => ({ size: cart.length }));
+    const exist = cart.some((item) => item.name === title);
+    if (exist) {
+      const newArray = cart.map((item) => {
+        if (item.name === title) {
+          return { ...item, qt: item.qt + 1 };
+        }
+        return item;
+      });
+      localStorage.setItem('cart', JSON.stringify(newArray));
+      this.setState(() => ({ size: newArray.length }));
+    } else {
+      cart.push({
+        name: title,
+        image: thumbnail,
+        value: price,
+        qt: 1,
+        // eslint-disable-next-line camelcase
+        estoque: available_quantity,
+      });
+      localStorage.setItem('cart', JSON.stringify(cart));
+      this.setState(() => ({ size: cart.length }));
+    }
   };
 
   render() {
+    const { history } = this.props;
     const { search, products, validate, listOfCategories, undefine, size } = this.state;
     const UNDEFINED = <span>Nenhum produto foi encontrado</span>;
     return (
@@ -85,13 +95,16 @@ class Home extends Component {
             </form>
           </div>
           <div>
-            {/* Link para o Cart */}
-            <Link to="/cart" data-testid="shopping-cart-button">
+            <button
+              data-testid="shopping-cart-button"
+              onClick={ () => history.push('/cart') }
+            >
               <AiOutlineShoppingCart />
               { size !== 0 && (
                 <p data-testid="shopping-cart-size">{ size }</p>
               ) }
-            </Link>
+
+            </button>
           </div>
         </div>
         <div>
@@ -115,8 +128,6 @@ class Home extends Component {
               { undefine && UNDEFINED }
               { (products.length !== 0) && (
                 products.map((product, index) => (
-
-                  // troquei o fragment <> por uma div
                   <div key={ index }>
                     <Card
                       details={ product }
@@ -128,7 +139,6 @@ class Home extends Component {
                     >
                       Adicionar
                     </button>
-
                   </div>))
               )}
             </div>
@@ -138,5 +148,11 @@ class Home extends Component {
     );
   }
 }
+
+Home.propTypes = {
+  history: PropTypes.shape({
+    push: PropTypes.func,
+  }).isRequired,
+};
 
 export default Home;

@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Link } from 'react-router-dom';
+import { RxCaretLeft } from 'react-icons/rx';
 import { AiOutlineShoppingCart } from 'react-icons/ai';
 import { getProductById } from '../services/api';
 
 const ratingValues = ['1', '2', '3', '4', '5'];
 
-class ProductDetails extends Component {
+export default class ProductDetails extends Component {
   state = {
     size: 0,
     product: {},
@@ -19,7 +19,6 @@ class ProductDetails extends Component {
     error: false,
   };
 
-  // Obtém o ID do produto, faz uma chamada à API e atualiza o estado do componente
   async componentDidMount() {
     const { match } = this.props;
     const { params } = match;
@@ -31,11 +30,31 @@ class ProductDetails extends Component {
   }
 
   addToCart = (product) => {
-    const { title, thumbnail, price } = product;
+    // eslint-disable-next-line camelcase
+    const { title, thumbnail, price, available_quantity } = product;
     const cart = JSON.parse(localStorage.getItem('cart')) || [];
-    cart.push({ name: title, image: thumbnail, value: price, qt: 1 });
-    localStorage.setItem('cart', JSON.stringify(cart));
-    this.setState(() => ({ size: cart.length }));
+    const exist = cart.some((item) => item.name === title);
+    if (exist) {
+      const newArray = cart.map((item) => {
+        if (item.name === title) {
+          return { ...item, qt: item.qt + 1 };
+        }
+        return item;
+      });
+      localStorage.setItem('cart', JSON.stringify(newArray));
+      this.setState(() => ({ size: newArray.length }));
+    } else {
+      cart.push({
+        name: title,
+        image: thumbnail,
+        value: price,
+        qt: 1,
+        // eslint-disable-next-line camelcase
+        estoque: available_quantity,
+      });
+      localStorage.setItem('cart', JSON.stringify(cart));
+      this.setState(() => ({ size: cart.length }));
+    }
   };
 
   handleInputChange = (event) => {
@@ -55,9 +74,8 @@ class ProductDetails extends Component {
     const { productId } = params;
     const { review: { email, text, rating } } = this.state;
 
-    // validação dos campos
     if (!email || !rating) {
-      this.setState({ error: true }); // atualizando o estado error
+      this.setState({ error: true });
       return;
     }
 
@@ -82,27 +100,32 @@ class ProductDetails extends Component {
     const { review } = this.state;
     const { email, rating, text } = review;
     const { size, reviews, error } = this.state;
-
+    const { history } = this.props;
     return (
       <div>
 
-        <h2>Detalhes do Produto</h2>
+        <button onClick={ () => history.push('/') }>
+          <RxCaretLeft />
+        </button>
 
-        {/* Imagem do produto */}
+        <h2>Detalhes do Produto</h2>
+        {
+          product?.shipping?.free_shipping && (
+            <span data-testid="free-shipping">Frete grátis</span>
+          )
+        }
         <img
           src={ product.thumbnail }
           alt={ product.title }
           data-testid="product-detail-image"
         />
 
-        {/* Descrição do produto */}
         <p data-testid="product-detail-name">
           Descrição:
           {' '}
           { product.title }
         </p>
 
-        {/* Preço e moeda do produto */}
         <p data-testid="product-detail-price">
           Preço:
           {' '}
@@ -111,13 +134,15 @@ class ProductDetails extends Component {
           { product.currency_id }
         </p>
 
-        {/* Link para o carrinho de compras */}
-        <Link to="/cart" data-testid="shopping-cart-button">
+        <button
+          data-testid="shopping-cart-button"
+          onClick={ () => history.push('/cart') }
+        >
           <AiOutlineShoppingCart />
           { size !== 0 && (
             <p data-testid="shopping-cart-size">{ size }</p>
           ) }
-        </Link>
+        </button>
         <button
           data-testid="product-detail-add-to-cart"
           onClick={ () => this.addToCart(product) }
@@ -125,10 +150,7 @@ class ProductDetails extends Component {
           Adicionar
         </button>
 
-        {/* Form */}
         <form onSubmit={ this.handleSubmitReview }>
-
-          {/* Email */}
           <label htmlFor="email">
             Email:
             <input
@@ -140,8 +162,6 @@ class ProductDetails extends Component {
               data-testid="product-detail-email"
             />
           </label>
-
-          {/* Nota de avaliação */}
           <div>
             Avaliação:
             {ratingValues.map((index) => (
@@ -159,7 +179,6 @@ class ProductDetails extends Component {
             ))}
           </div>
 
-          {/* Input de Comentários */}
           <label htmlFor="text">
             Comentário:
             <textarea
@@ -170,17 +189,14 @@ class ProductDetails extends Component {
               data-testid="product-detail-evaluation"
             />
 
-            {/* Botão Submit */}
           </label>
           {error && <p data-testid="error-msg">Campos inválidos</p>}
-          {/* exibindo mensagem de erro caso o estado error seja true */}
           <button type="submit" data-testid="submit-review-btn">
             Enviar Avaliação
           </button>
 
         </form>
 
-        {/* Review criado após dar submit no botão */}
         <div>
           {reviews.map((currentReview, index) => (
             <div key={ index }>
@@ -202,7 +218,6 @@ class ProductDetails extends Component {
                   { currentReview.text}
                 </span>
               </p>
-              {/* remover o <br> depois */}
               <br />
 
             </div>
@@ -216,13 +231,12 @@ class ProductDetails extends Component {
 }
 
 ProductDetails.propTypes = {
+  history: PropTypes.shape({
+    push: PropTypes.func,
+  }).isRequired,
   match: PropTypes.shape({
     params: PropTypes.shape({
       productId: PropTypes.string.isRequired,
     }).isRequired,
   }).isRequired,
 };
-
-export default ProductDetails;
-
-// ok

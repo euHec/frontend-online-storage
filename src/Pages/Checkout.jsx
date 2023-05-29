@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import { Component } from 'react';
+import { RxCaretLeft } from 'react-icons/rx';
 
 export default class Checkout extends Component {
   state = {
@@ -49,7 +50,7 @@ export default class Checkout extends Component {
     return (
       <>
         <button onClick={ () => history.push('/cart') }>
-          retornar
+          <RxCaretLeft />
         </button>
         <div>
           <div>

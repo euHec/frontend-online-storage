@@ -4,7 +4,6 @@ import Home from './Pages/Home';
 import Cart from './Pages/Cart';
 import ProductDetails from './Pages/ProductDetails';
 import Checkout from './Pages/Checkout';
-import './App.css';
 
 class App extends Component {
   render() {
