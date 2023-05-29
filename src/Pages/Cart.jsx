@@ -19,13 +19,16 @@ class Cart extends Component {
     this.setState({ products: cart });
   };
 
-  addQuantity = ({ name }) => {
+  addQuantity = ({ name, estoque }) => {
     this.setState((prevState) => {
       const { products } = prevState;
       return {
         products: products.map((item) => {
           if (item.name === name) {
-            return { ...item, qt: item.qt + 1 };
+            if (item.qt < estoque) {
+              return { ...item, qt: item.qt + 1 };
+            }
+            return { ...item, qt: estoque };
           }
           return item;
         }),

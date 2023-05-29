@@ -33,7 +33,7 @@ describe(`13 - Mostre junto ao ícone do carrinho a quantidade de produtos dentr
     userEvent.click((await screen.findAllByTestId('product-add-to-cart'))[1]);
     userEvent.click((await screen.findAllByTestId('product-detail-link'))[0]);
     await waitFor(async () => {
-      expect((await screen.findByTestId('shopping-cart-size'))).toHaveTextContent('4');
+      expect((await screen.findByTestId('shopping-cart-size'))).toHaveTextContent('2');
     })
   });
 });

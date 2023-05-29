@@ -6,7 +6,6 @@ import { Link } from 'react-router-dom';
 class Card extends Component {
   render() {
     const { details } = this.props;
-    console.log(details);
     const { title, thumbnail, price, id, shipping } = details;
     return (
       <div data-testid="product" className="product">
